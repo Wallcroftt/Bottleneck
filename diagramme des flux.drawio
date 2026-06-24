@@ -1,0 +1,76 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.4 Chrome/138.0.7204.97 Electron/37.2.1 Safari/537.36" version="28.0.4">
+  <diagram name="Page-1" id="eUcuLZRlRQ72_g7T9hR3">
+    <mxGraphModel dx="2857" dy="1197" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="mVpoGQinSYFwAtrd-hdu-1" value="erp.xlsx&lt;div&gt;web.xlsx&lt;/div&gt;&lt;div&gt;liaison.xlsx&lt;/div&gt;" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.documents;fillColor=#759C3E;gradientColor=none;" vertex="1" parent="1">
+          <mxGeometry x="100" y="290" width="90" height="100.5" as="geometry" />
+        </mxCell>
+        <mxCell id="mVpoGQinSYFwAtrd-hdu-2" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;width=8;endSize=3.91;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="210" y="339.96" as="sourcePoint" />
+            <mxPoint x="280" y="340.21" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="mVpoGQinSYFwAtrd-hdu-3" value="&lt;font style=&quot;color: rgb(0, 127, 255);&quot;&gt;Conversion &amp;amp; Nettoyage (Kestra)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#007FFF;" vertex="1" parent="1">
+          <mxGeometry x="300" y="287.56" width="170" height="105.38" as="geometry" />
+        </mxCell>
+        <mxCell id="mVpoGQinSYFwAtrd-hdu-4" value="&lt;font style=&quot;color: rgb(255, 128, 0);&quot;&gt;Vérification des volumes&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;strokeColor=#FF8000;" vertex="1" parent="1">
+          <mxGeometry x="510" y="290.12" width="170" height="100.25" as="geometry" />
+        </mxCell>
+        <mxCell id="mVpoGQinSYFwAtrd-hdu-5" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;strokeColor=#FF3333;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="594.58" y="420" as="sourcePoint" />
+            <mxPoint x="594.58" y="496" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="mVpoGQinSYFwAtrd-hdu-6" value="&lt;font style=&quot;color: rgb(255, 51, 51);&quot;&gt;Arrêt / Alerte&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#FF3333;" vertex="1" parent="1">
+          <mxGeometry x="535" y="520" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="mVpoGQinSYFwAtrd-hdu-7" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;width=8;endSize=3.91;strokeColor=#009900;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="720" y="339.83" as="sourcePoint" />
+            <mxPoint x="790" y="340.08" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="mVpoGQinSYFwAtrd-hdu-10" value="&lt;font style=&quot;color: rgb(0, 127, 255);&quot;&gt;Jointure SQL (DuckDB)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#007FFF;" vertex="1" parent="1">
+          <mxGeometry x="820" y="287.56" width="200" height="102.44" as="geometry" />
+        </mxCell>
+        <mxCell id="mVpoGQinSYFwAtrd-hdu-12" value="&lt;font style=&quot;color: rgb(0, 127, 255);&quot;&gt;Analyse &amp;amp; Stats (Z-Score)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#007FFF;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="287.56" width="200" height="102.44" as="geometry" />
+        </mxCell>
+        <mxCell id="mVpoGQinSYFwAtrd-hdu-13" value="&lt;font style=&quot;color: rgb(255, 128, 0);&quot;&gt;Validation CA &amp;amp; Outliers&lt;/font&gt;" style="rhombus;whiteSpace=wrap;html=1;strokeColor=#FF8000;" vertex="1" parent="1">
+          <mxGeometry x="1300" y="287.56" width="170" height="100.25" as="geometry" />
+        </mxCell>
+        <mxCell id="mVpoGQinSYFwAtrd-hdu-14" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;width=8;endSize=3.91;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1510" y="337.27000000000004" as="sourcePoint" />
+            <mxPoint x="1580" y="337.52000000000004" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="mVpoGQinSYFwAtrd-hdu-16" value="vins_premiums.csv&lt;div&gt;vins_ordinaires.csv&lt;/div&gt;&lt;div&gt;rapport_financier.xlsx&lt;/div&gt;" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.documents;fillColor=#759C3E;gradientColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1614" y="287.31" width="90" height="100.5" as="geometry" />
+        </mxCell>
+        <mxCell id="mVpoGQinSYFwAtrd-hdu-19" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;width=8;endSize=3.91;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-10" y="336.92" as="sourcePoint" />
+            <mxPoint x="60" y="337.17" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="mVpoGQinSYFwAtrd-hdu-20" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;strokeColor=#FF3333;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1384.58" y="420" as="sourcePoint" />
+            <mxPoint x="1384.58" y="496" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="mVpoGQinSYFwAtrd-hdu-21" value="&lt;font style=&quot;color: rgb(255, 51, 51);&quot;&gt;Arrêt / Alerte&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#FF3333;" vertex="1" parent="1">
+          <mxGeometry x="1325" y="520" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="mVpoGQinSYFwAtrd-hdu-22" value="Trigger Kestra" style="html=1;verticalLabelPosition=bottom;align=center;labelBackgroundColor=#ffffff;verticalAlign=top;strokeWidth=2;strokeColor=#0080F0;shadow=0;dashed=0;shape=mxgraph.ios7.icons.alarm_clock;" vertex="1" parent="1">
+          <mxGeometry x="-110" y="304.06" width="62" height="67" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

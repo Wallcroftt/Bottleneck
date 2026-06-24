@@ -1,0 +1,9 @@
+# Données
+data/
+
+# environnement
+.env
+.venv/
+
+# VSCode
+.code-workspace

@@ -1,0 +1,161 @@
+id: bottleneck_quality_pipeline
+namespace: company.bottleneck
+description: |
+  Pipeline ETL avec TESTS QUALITÉ INTÉGRÉS.
+  - Validation des volumes (825 ERP, 714 Web)
+  - Validation du CA (70 568.60 €)
+  - Validation du Z-Score (30 vins premium)
+
+inputs:
+  - id: erp_file
+    type: FILE
+  - id: web_file
+    type: FILE
+  - id: liaison_file
+    type: FILE
+
+triggers:
+  - id: schedule_monthly
+    type: io.kestra.plugin.core.trigger.Schedule
+    cron: "0 9 15 * *"
+
+tasks:
+  - id: convert_excel_to_csv
+    type: io.kestra.plugin.scripts.python.Script
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+    containerImage: ghcr.io/kestra-io/pydata:latest
+    beforeCommands:
+      - pip install openpyxl
+    inputFiles:
+      erp.xlsx: "{{ inputs.erp_file }}"
+      web.xlsx: "{{ inputs.web_file }}"
+      liaison.xlsx: "{{ inputs.liaison_file }}"
+    script: |
+      import pandas as pd
+      pd.read_excel('erp.xlsx').to_csv('erp.csv', index=False)
+      pd.read_excel('web.xlsx').to_csv('web.csv', index=False)
+      df_l = pd.read_excel('liaison.xlsx')
+      df_l.rename(columns={'id_web': 'sku'}, inplace=True)
+      df_l.to_csv('liaison.csv', index=False)
+    outputFiles:
+      - "*.csv"
+
+  - id: sql_cleaning_and_verification
+    type: io.kestra.plugin.jdbc.duckdb.Query
+    retry:
+      type: constant
+      interval: PT1M
+      maxAttempt: 3
+    inputFiles:
+      erp.csv: "{{ outputs.convert_excel_to_csv.outputFiles['erp.csv'] }}"
+      web.csv: "{{ outputs.convert_excel_to_csv.outputFiles['web.csv'] }}"
+      liaison.csv: "{{ outputs.convert_excel_to_csv.outputFiles['liaison.csv'] }}"
+    sql: |
+      SELECT 
+        (SELECT COUNT(*) FROM (SELECT DISTINCT * FROM read_csv_auto('erp.csv') WHERE product_id IS NOT NULL)) as cnt_erp,        
+        (SELECT COUNT(*) FROM (SELECT DISTINCT * FROM read_csv_auto('liaison.csv') WHERE product_id IS NOT NULL)) as cnt_liaison, 
+        (SELECT COUNT(*) FROM (SELECT DISTINCT * FROM read_csv_auto('web.csv') WHERE sku IS NOT NULL AND post_type = 'product')) as cnt_web;
+    fetchType: FETCH
+
+  - id: validate_row_counts
+    type: io.kestra.plugin.scripts.python.Script
+    containerImage: ghcr.io/kestra-io/pydata:latest
+    env: 
+      COUNTS: "{{ outputs.sql_cleaning_and_verification.rows[0] | json }}"
+    script: |
+      import json
+      import os
+      counts = json.loads(os.environ['COUNTS'])
+      if counts['cnt_erp'] != 825:
+          raise ValueError(f"ERP: {counts['cnt_erp']} (attendu : 825)")
+      if counts['cnt_liaison'] != 825:
+          raise ValueError(f"Liaison: {counts['cnt_liaison']} (attendu : 825)")
+      if counts['cnt_web'] != 714:
+          raise ValueError(f"WEB: {counts['cnt_web']} (attendu : 714)")
+      print("VOLUMES OK")
+
+  - id: sql_join
+    type: io.kestra.plugin.jdbc.duckdb.Query
+    retry:
+      type: constant
+      interval: PT1M
+      maxAttempt: 3
+    inputFiles:
+      erp.csv: "{{ outputs.convert_excel_to_csv.outputFiles['erp.csv'] }}"
+      web.csv: "{{ outputs.convert_excel_to_csv.outputFiles['web.csv'] }}"
+      liaison.csv: "{{ outputs.convert_excel_to_csv.outputFiles['liaison.csv'] }}"
+    sql: |
+      WITH clean_erp AS (
+          SELECT DISTINCT * FROM read_csv_auto('erp.csv') WHERE product_id IS NOT NULL
+      ),
+      clean_web AS (
+          SELECT DISTINCT * FROM read_csv_auto('web.csv') WHERE sku IS NOT NULL AND post_type = 'product'
+      ),
+      clean_liaison AS (
+          SELECT DISTINCT * FROM read_csv_auto('liaison.csv') WHERE product_id IS NOT NULL
+      )
+      SELECT e.product_id, w.sku, e.price, w.total_sales, (e.price * w.total_sales) AS chiffre_affaire
+      FROM clean_erp e
+      JOIN clean_liaison l ON e.product_id = l.product_id
+      JOIN clean_web w ON l.sku = w.sku;
+    store: true
+
+  - id: ion_to_csv
+    type: io.kestra.plugin.serdes.csv.IonToCsv
+    from: "{{ outputs.sql_join.uri }}"
+
+  - id: python_calculations_and_tests
+    type: io.kestra.plugin.scripts.python.Script
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+    containerImage: ghcr.io/kestra-io/pydata:latest
+    beforeCommands:
+      - pip install openpyxl
+    inputFiles:
+      data.csv: "{{ outputs.ion_to_csv.uri }}"
+    script: |
+      import pandas as pd
+      df = pd.read_csv('data.csv')
+      df.columns = df.columns.str.lower().str.strip()
+      
+      if len(df) != 714:
+          raise ValueError(f"Jointure: {len(df)} (attendu : 714)")
+          
+      mean, std = df['price'].mean(), df['price'].std()
+      df['z_score'] = (df['price'] - mean) / std
+      premium, ordinary = df[df['z_score'] > 2], df[df['z_score'] <= 2]
+      total_ca = df['chiffre_affaire'].sum()
+      
+      if abs(total_ca - 70568.60) > 0.1:
+           raise ValueError(f"CA: {total_ca} (attendu : 70568.60)")
+           
+      if len(premium) != 30:
+          raise ValueError(f"Premium: {len(premium)} (attendu : 30)")
+          
+      premium.to_csv('vins_premium.csv', index=False)
+      ordinary.to_csv('vins_ordinaires.csv', index=False)
+      
+      with pd.ExcelWriter('rapport_financier.xlsx') as writer:
+          df.to_excel(writer, sheet_name='Detail', index=False)
+          
+    outputFiles:
+      - "*.csv"
+      - "*.xlsx"
+
+outputs:
+  - id: report
+    type: STRING
+    value: "{{ outputs.python_calculations_and_tests.outputFiles['rapport_financier.xlsx'] }}"
+  - id: premium
+    type: STRING
+    value: "{{ outputs.python_calculations_and_tests.outputFiles['vins_premium.csv'] }}"
+  - id: ordinary
+    type: STRING
+    value: "{{ outputs.python_calculations_and_tests.outputFiles['vins_ordinaires.csv'] }}"
+
+errors:
+  - id: alert_on_failure
+    type: io.kestra.plugin.core.log.Log
+    level: ERROR
+    message: "ÉCHEC DU PIPELINE : Vérifiez les logs ou les fichiers sources."
