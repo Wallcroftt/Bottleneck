@@ -1,5 +1,3 @@
----
-
 # 🍷 Pipeline ETL & Qualité de Données - Bottleneck
 
 ## 📝 Contexte du Projet
